@@ -1,0 +1,34 @@
+# ============================================================
+#  Núcleo de Pagos — configuración Apache para hosting compartido
+# ============================================================
+
+# --- Enrutado: todo lo que no sea un archivo/carpeta real va a index.php ---
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^ index.php [L]
+</IfModule>
+
+# Alternativa si mod_rewrite no estuviera disponible.
+<IfModule !mod_rewrite.c>
+    FallbackResource /index.php
+</IfModule>
+
+# --- No listar directorios ---
+Options -Indexes
+
+# --- Proteger archivos sensibles ---
+<FilesMatch "\.(sql|md|txt|json|lock)$">
+    Require all denied
+</FilesMatch>
+<Files "config.php">
+    Require all denied
+</Files>
+
+# --- Cabeceras de seguridad básicas ---
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-Frame-Options "SAMEORIGIN"
+    Header always set Referrer-Policy "same-origin"
+</IfModule>

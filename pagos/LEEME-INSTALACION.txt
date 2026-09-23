@@ -1,0 +1,96 @@
+====================================================================
+ NÚCLEO DE PAGOS — INSTALACIÓN EN HOSTGATOR (hosting compartido)
+====================================================================
+
+Requisitos: PHP 8.0 o superior + una base de datos MySQL.
+(Ambos se configuran desde cPanel; no se necesita Docker.)
+
+--------------------------------------------------------------------
+PASO 1 · Crear la base de datos MySQL
+--------------------------------------------------------------------
+1. Entra a cPanel  →  "Bases de datos MySQL".
+2. Crea una base de datos nueva (ej. "pagos").
+   HostGator le pondrá un prefijo:  tucuenta_pagos
+3. Crea un usuario MySQL y una contraseña.
+   También llevará prefijo:  tucuenta_pagos
+4. En "Agregar usuario a la base de datos", asígnalo con
+   TODOS LOS PRIVILEGIOS ("ALL PRIVILEGES").
+5. Anota: nombre de la base, usuario y contraseña.
+
+--------------------------------------------------------------------
+PASO 2 · Importar las tablas
+--------------------------------------------------------------------
+1. cPanel  →  "phpMyAdmin".
+2. Selecciona tu base de datos en la lista de la izquierda.
+3. Pestaña "Importar"  →  elige el archivo:
+       install/schema-mysql.sql
+4. Pulsa "Continuar". Debe crear las tablas "prestamos" y "pagos".
+
+--------------------------------------------------------------------
+PASO 3 · Poner tus credenciales
+--------------------------------------------------------------------
+Abre el archivo  config.php  y edita:
+       'name' => 'tucuenta_pagos',
+       'user' => 'tucuenta_pagos',
+       'pass' => 'TU_CONTRASENA',
+('host' casi siempre es 'localhost' en HostGator.)
+
+--------------------------------------------------------------------
+PASO 4 · Subir los archivos
+--------------------------------------------------------------------
+OPCIÓN A — Servirlo en la raíz del dominio (tudominio.com):
+   Sube TODO el contenido de esta carpeta DENTRO de "public_html".
+   (index.php debe quedar en public_html/index.php)
+
+OPCIÓN B — Servirlo en una subcarpeta (tudominio.com/pagos):
+   Sube esta carpeta "pagos" completa dentro de "public_html".
+   (La app detecta sola la ruta; no hay que configurar nada más.)
+
+Forma fácil: en cPanel → "Administrador de archivos", sube el ZIP
+dentro de public_html y usa "Extraer".
+
+--------------------------------------------------------------------
+PASO 5 · Abrir la web
+--------------------------------------------------------------------
+   Opción A:  https://tudominio.com/
+   Opción B:  https://tudominio.com/pagos/
+
+Si ves "No se pudo conectar a la base de datos", revisa el PASO 3
+(nombre/usuario/contraseña con su prefijo) y que el usuario tenga
+privilegios sobre la base.
+
+--------------------------------------------------------------------
+INICIO DE SESIÓN (LOGIN)
+--------------------------------------------------------------------
+La app ahora pide usuario y contraseña. Ya viene creado tu usuario:
+
+        Usuario:     Lucio
+        Contraseña:  Luc1@2488
+        Rol:         Dios (puede crear más usuarios)
+
+· Las contraseñas se guardan CIFRADAS con bcrypt (nunca en texto plano).
+· Entra, ve al menú "Usuarios" (arriba a la derecha) y desde ahí
+  puedes crear más usuarios (rol Normal o Dios) y eliminarlos.
+· Solo el rol "Dios" puede administrar usuarios.
+
+SI YA HABÍAS IMPORTADO LA BASE ANTES (solo tenías prestamos/pagos):
+  Importa en phpMyAdmin el archivo:  install/agregar-login.sql
+  (crea la tabla "usuarios" y tu usuario Lucio).
+
+SI ES UNA INSTALACIÓN NUEVA:
+  El archivo install/schema-mysql.sql ya incluye todo (usuarios + Lucio).
+
+Para cambiar tu contraseña más adelante: crea un usuario nuevo con la
+contraseña que quieras y borra el anterior desde la pantalla "Usuarios".
+
+--------------------------------------------------------------------
+NOTAS
+--------------------------------------------------------------------
+· Selecciona PHP 8.0+ en cPanel → "MultiPHP Manager" si hiciera falta.
+· El diseño usa fuentes de Google y Bootstrap por CDN: necesita
+  conexión a internet (normal en cualquier hosting).
+· Para depurar temporalmente, pon 'debug' => true en config.php
+  (recuerda volverlo a false después).
+· Las carpetas app/ y views/ están protegidas con .htaccess para que
+  no se puedan abrir desde el navegador.
+====================================================================
